@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/product');
-// const Review = require('../models/review');
-// const { isLoggedIn} = require('../middleware');
+const Review = require('../models/review');
+const { isLoggedIn} = require('../middleware');
 
 
 // Get all the products
@@ -21,12 +21,12 @@ router.get('/products', async(req, res) => {
 });
 
 // Get the new from to create new product
-router.get('/products/new', (req, res) => {
+router.get('/products/new',isLoggedIn, (req, res) => {
     res.render('products/new')
 });
 
 // create a new product with the given payload
-router.post('/products', async (req, res) => {
+router.post('/products',isLoggedIn, async (req, res) => {
     
     try {
         const newProduct = {
@@ -35,7 +35,7 @@ router.post('/products', async (req, res) => {
     
         await Product.create(newProduct);
     
-        // req.flash('success', 'Product Created Successfully!');
+        req.flash('success', 'Product Created Successfully!');
         res.redirect('/products');
     }
     catch (e) {
@@ -51,7 +51,7 @@ router.get('/products/:id', async (req, res) => {
         
         const { id } = req.params;
         // inflating the foundproduct with the reviews using populate
-        const product = await Product.findById(id);
+        const product = await Product.findById(id).populate('reviews');
         res.render('products/show', { product });
         
     } catch (e) {
@@ -63,7 +63,7 @@ router.get('/products/:id', async (req, res) => {
 
 
 // getting the edit form prefilled with the data
-router.get('/products/:id/edit', async (req, res) => {
+router.get('/products/:id/edit',isLoggedIn, async (req, res) => {
     
     try {
         const { id } = req.params;
@@ -80,7 +80,7 @@ router.get('/products/:id/edit', async (req, res) => {
 
 
 // updating the product with the given payload
-router.patch('/products/:id', async (req, res) => {
+router.patch('/products/:id',isLoggedIn, async (req, res) => {
     
     try {
         const updatedProduct = req.body;
@@ -97,7 +97,7 @@ router.patch('/products/:id', async (req, res) => {
     }
 });
 
-router.delete('/products/:id', async (req, res) => {
+router.delete('/products/:id',isLoggedIn, async (req, res) => {
 
     try {
         const { id } = req.params;
@@ -115,7 +115,7 @@ router.delete('/products/:id', async (req, res) => {
 
 // Creating a review for each product
 
-router.post('/products/:id/review', async(req, res) => {
+router.post('/products/:id/review',isLoggedIn, async(req, res) => {
 
 
     try {
@@ -131,7 +131,7 @@ router.post('/products/:id/review', async(req, res) => {
         await product.save();
         await review.save();
 
-        req.flash('success', 'Successfully created your review!!');
+        // req.flash('success', 'Successfully created your review!!');
 
         res.redirect(`/products/${id}`);
     }

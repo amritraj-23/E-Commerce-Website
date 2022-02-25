@@ -6,18 +6,6 @@ const passport = require('passport');
 
 
 
-// router.get('/fakeuser', async(req, res) => {
-    
-//     const user = new User({
-//         username: 'sabeel',
-//         email: 'sabeel@gmail.com'
-//     });
-
-//     const newUser = await User.register(user,'sabeel12')
-
-//     res.send(newUser);
-// })
-
 // Get the signup form
 router.get('/register', (req, res) => {
     res.render('auth/signup');
